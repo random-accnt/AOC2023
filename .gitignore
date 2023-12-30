@@ -1,4 +1,6 @@
-build
+bin
 /.idea
 aoc2023*
 .clangd
+src/*.o
+src/*/*.o
