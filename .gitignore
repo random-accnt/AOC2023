@@ -1,3 +1,4 @@
 build
-aoc2023
+/.idea
+aoc2023*
 .clangd
