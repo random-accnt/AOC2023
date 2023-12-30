@@ -9,7 +9,8 @@ ifeq ($(OS),Windows_NT)
 	RMDIR = cmd /C rmdir /Q /S
 	MKDIR = mkdir
 	TARGET_EXTENSION = .exe
-	SRCS := $(wildcard $(SRCDIR)/*.cpp)
+	SRCS := $(wildcard $(SRCDIR)/main.cpp)
+	SRCS += $(wildcard $(SRCDIR)/*/*.cpp)
 	OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(BUILDDIR)/%.o)
 else
 	RM = rm -f
@@ -17,14 +18,15 @@ else
 	MKDIR = mkdir -p
 	TARGET_EXTENSION =
 	SRCS := $(wildcard $(SRCDIR)/*.cpp)
+	SRCS += $(wildcard $(SRCDIR)/*/*.cpp)
 	OBJS := $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(SRCS))
 endif
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET)$(TARGET_EXTENSION) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET)$(TARGET_EXTENSION) $(BUILDDIR)/*.o
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp | $(BUILDDIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $^ -o $(BUILDDIR)/$(notdir $@)
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
