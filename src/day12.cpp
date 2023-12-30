@@ -1,4 +1,3 @@
-#include <format>
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -8,7 +7,8 @@
 #include <vector>
 #include "day12.h"
 
-using std::cout, std::endl;
+using std::cout;
+using std::endl;
 
 enum SpringStatus {
   OK = '.',
@@ -16,36 +16,51 @@ enum SpringStatus {
   Unknown = '?'
 };
 
+void printBinary(int num) {
+    int bits = sizeof(num) * 8;
+    unsigned int mask = 1 << (bits - 1 );
+    while (mask > 0) {
+        if (num & mask)
+            printf("1");
+        else
+            printf("0");
+
+        mask >>= 1;
+    }
+    printf("\n");
+}
+
 bool isArrangementValid(const std::string& data, const std::regex& pattern) {
   return std::regex_match(data, pattern);
 }
 
 int validCombinationCountBraindead(std::string input, const std::regex& pattern) {
   std::vector<int> unknownPositions{};
-  for (int i = 0; i < input.size(); i++) {
+  for (int i = 0; i < static_cast<int>(input.size()); i++) {
     if (input[i] == Unknown) {
       unknownPositions.push_back(i);
     }
   }
-
-  cout << " = " << input << endl;
 
   int result = 0;
   int totalCombinations = 1 << unknownPositions.size();
   for (int i = 0; i < totalCombinations; ++i) {
     std::vector<bool> combination;
 
-    for (int j = 0; j < unknownPositions.size(); ++j) {
-      bool state = (i >> j) & 1;
-      combination.emplace_back(state);
+    unsigned int mask = 1 << (unknownPositions.size() - 1);
+    while (mask > 0) {
+      bool state = i & mask;
+      combination.push_back(state);
+      mask >>= 1;
     }
 
     // replace ?'s
-    for (const int pos: unknownPositions) {
-      input[pos] = (combination[pos]) ? OK : Damaged ;
+    auto combinationValue = combination.begin();
+    for (const int& pos: unknownPositions) {
+      input[pos] = (*combinationValue) ? OK : Damaged ;
+      combinationValue++;
     }
     if (isArrangementValid(input, pattern)) {
-      cout << " - " << input << endl;
       result += 1;
     }
   }
@@ -55,7 +70,7 @@ int validCombinationCountBraindead(std::string input, const std::regex& pattern)
 
 void day12() {
   std::ifstream inputFile;
-  inputFile.open("input_smol");
+  inputFile.open("input/day12");
   std::string line;
   int validCount = 0;
   int lineNum = 1;
@@ -72,32 +87,29 @@ void day12() {
         continue;
       }
 
-      if (currentNum.size() > 0) {
+      if (!currentNum.empty()) {
         damagedRanges.push_back(std::stoi(currentNum));
       }
 
       currentNum = "";
     }
 
-    if (currentNum.size() > 0) {
+    if (!currentNum.empty()) {
       damagedRanges.push_back(std::stoi(currentNum));
     }
 
-    for (const int& num: damagedRanges) {
-      cout << num << ' ';
-    }
-    cout << endl;
-
     // prepare regex
     std::string regexStr = "^\\.*";
-    for (int i = 0; i < damagedRanges.size(); i++){
+    for (size_t i = 0; i < damagedRanges.size(); i++){
       if (i > 0) {
         regexStr += "\\.+";
       }
-      regexStr += std::format("#{{{}}}", std::to_string(damagedRanges[i]));
+      regexStr += "#{";
+      regexStr += std::to_string(damagedRanges[i]);
+      regexStr += "}";
 
     }
-    regexStr += "$";
+    regexStr += "\\.*$";
     std::regex pattern(regexStr);
 
     int count = validCombinationCountBraindead(data, pattern);
@@ -106,4 +118,6 @@ void day12() {
     cout << lineNum << "/1000:\t" << count << '\t' << validCount << endl;
     ++lineNum;
   }
+
+  cout << "Valid combinations: " << validCount << endl;
 }
