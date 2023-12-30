@@ -1,4 +1,4 @@
-#include "day12.h"
+#include "day12/day12.h"
 
 int main (int argc, char *argv[]) {
   day12();

@@ -115,7 +115,6 @@ void day12() {
     int count = validCombinationCountBraindead(data, pattern);
     validCount += count;
 
-    cout << lineNum << "/1000:\t" << count << '\t' << validCount << endl;
     ++lineNum;
   }
 
