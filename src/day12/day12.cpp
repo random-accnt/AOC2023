@@ -70,7 +70,7 @@ int validCombinationCountBraindead(std::string input, const std::regex& pattern)
 
 void day12() {
   std::ifstream inputFile;
-  inputFile.open("input/day12");
+  inputFile.open("input/day12Smol");
   std::string line;
   int validCount = 0;
   int lineNum = 1;
@@ -98,6 +98,20 @@ void day12() {
       damagedRanges.push_back(std::stoi(currentNum));
     }
 
+    // update for part 2
+    std::vector<int> temp = damagedRanges;
+    std::string tempStr = data;
+    for (int i = 0; i < 4; i++) {
+        damagedRanges.insert(damagedRanges.end(), temp.begin(), temp.end());
+        data += tempStr;
+    }
+
+    cout << data << ' ';
+    for (const int& i: damagedRanges) {
+        cout << i << ' ';
+    }
+    cout << endl;
+
     // prepare regex
     std::string regexStr = "^\\.*";
     for (size_t i = 0; i < damagedRanges.size(); i++){
@@ -115,6 +129,7 @@ void day12() {
     int count = validCombinationCountBraindead(data, pattern);
     validCount += count;
 
+    cout << lineNum << endl;
     ++lineNum;
   }
 
