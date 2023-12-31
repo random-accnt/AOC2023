@@ -23,6 +23,7 @@ OBJS := $(patsubst $(SRCDIR)/%.cpp,$(SRCDIR)/%.o,$(SRCS))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
+		$(CXX) $(CXXFLAGS) -o $(BUILDDIR)/$(TARGET)$(TARGET_EXTENSION) $^
 
 $(SRCDIR)/%.o : $(SRCDIR)/%.cpp | $(BUILDDIR)
 	echo "Recompiling: " $@
@@ -34,6 +35,6 @@ $(BUILDDIR):
 .PHONY: clean
 
 clean:
+	$(RMDIR) $(BUILDDIR)
 	$(RM) $(SRCDIR)\main.o
 	$(RM) $(SRCDIR)\*\*.o
-	$(RMDIR) $(BUILDDIR)
