@@ -3,7 +3,7 @@
 Build and run:
 
 ```
-$ make && ./aoc2023
+$ make && ./aoc2023 <day_num>
 ```
 
 Runs all uncommented days in main(). TODO: add a better way of selecting days.
