@@ -23,7 +23,7 @@ OBJS := $(patsubst $(SRCDIR)/%.cpp,$(SRCDIR)/%.o,$(SRCS))
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-		$(CXX) $(CXXFLAGS) -o $(BUILDDIR)/$(TARGET)$(TARGET_EXTENSION) $^
+	$(CXX) $(CXXFLAGS) -o $(BUILDDIR)/$(TARGET)$(TARGET_EXTENSION) $^
 
 $(SRCDIR)/%.o : $(SRCDIR)/%.cpp | $(BUILDDIR)
 	echo "Recompiling: " $@
