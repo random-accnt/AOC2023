@@ -1,6 +1,7 @@
 #include <iostream>
 #include "day12/day12.h"
 #include "day13/day13.h"
+#include "day14/day14.h"
 
 int main (int argc, char *argv[]) {
   if (argc != 2) {
@@ -26,6 +27,9 @@ int main (int argc, char *argv[]) {
       break;
     case 13:
       day13();
+      break;
+    case 14:
+      day14();
       break;
     default:
       std::cout << "Solution for day " << dayNum << " not implemented.\n";
