@@ -127,8 +127,6 @@ void processStuff2(size_t & result, std::vector<std::string>& rows, std::vector<
   size_t rowPos = mirroredPos2(rows);
   size_t colPos = mirroredPos2(cols);
 
-  cout << "Row " << rowPos << " Col " << colPos << endl;
-
   result += colPos + 100 * rowPos;
 
   cols.clear();
@@ -161,7 +159,7 @@ void day13() {
   }
 
   processStuff(result, rows, cols);
-  cout << "Result is: " << result << endl;
+  cout << "Result for part 1 is: " << result << endl;
 
   inputFile.close();
   // part 2
@@ -184,5 +182,5 @@ void day13() {
   }
 
   processStuff2(result, rows, cols);
-  cout << "Result is: " << result << endl;
+  cout << "Result for part 2 is: " << result << endl;
 }
