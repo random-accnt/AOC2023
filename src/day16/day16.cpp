@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <string>
 #include <vector>
 #include "day16.h"
@@ -122,27 +123,10 @@ void printLayout(const contraptionLayout& layout) {
   }
 }
 
-void day16() {
-  std::ifstream inputFile;
-  inputFile.open("input/day16");
-  std::string line;
-  contraptionLayout layout;
-
-  while (std::getline(inputFile, line)) {
-    std::vector<Field> row;
-    for (const char& c: line) {
-      if (c == '/' || c == '\\' || c == '.' || c == '-' || c == '|') {
-        Field field = *(new Field(c));
-        row.push_back(field);
-      }
-    }
-    layout.push_back(row);
-  }
-  inputFile.close();
-
-  layout[0][0].isVisited = true;
+void energizeTiles(contraptionLayout& layout, std::pair<int, int> pos = {0, -1},
+    std::pair<int, int> direction = RIGHT) {
   std::vector<Beam> beams;
-  Beam initBeam({0, -1}, RIGHT);
+  Beam initBeam(pos, direction);
   beams.push_back(initBeam);
   while (!beams.empty()) {
     std::vector<Beam> newBeams{};
@@ -164,7 +148,9 @@ void day16() {
     //add new beams
     beams.insert(beams.end(), newBeams.begin(), newBeams.end());
   }
+}
 
+int countEnergized(const contraptionLayout& layout) {
   int energizedTileCount = 0;
   for (const auto& row: layout) {
     for (const Field &field: row) {
@@ -172,5 +158,97 @@ void day16() {
     }
   }
 
+  return energizedTileCount;
+}
+
+void day16() {
+  std::ifstream inputFile;
+  inputFile.open("input/day16");
+  std::string line;
+  contraptionLayout layout;
+
+  while (std::getline(inputFile, line)) {
+    std::vector<Field> row;
+    for (const char& c: line) {
+      if (c == '/' || c == '\\' || c == '.' || c == '-' || c == '|') {
+        Field field = *(new Field(c));
+        row.push_back(field);
+      }
+    }
+    layout.push_back(row);
+  }
+  inputFile.close();
+
+  // copy layout
+  contraptionLayout layoutClean = layout;
+
+  energizeTiles(layout);
+
+  int energizedTileCount = countEnergized(layout);
+
   std::cout << "Energized tiles: " << energizedTileCount << std::endl;
+
+  energizedTileCount = 0;
+
+  for (int row = 0; row < layout.size(); row++) {
+    // first row / last row / regular row
+    if (row == 0 ) {
+      for (int col = 0; col < layout[row].size(); col++) {
+        if (col == 0) {
+          // corner from left
+          contraptionLayout temp = layoutClean;
+          energizeTiles(temp, {row, -1}, RIGHT);
+          int newCount = countEnergized(temp);
+          energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+
+
+        } else if (col == layout[row].size()-1) {
+          // corner from right
+          contraptionLayout temp = layoutClean;
+          energizeTiles(temp, {row, col+1}, LEFT);
+          int newCount = countEnergized(temp);
+          energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+        } 
+        contraptionLayout temp = layoutClean;
+        energizeTiles(temp, {-1, col}, DOWN);
+        int newCount = countEnergized(temp);
+        energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+      }
+    } else if (row == layout.size()-1) {
+      for (int col = 0; col < layout[row].size(); col++) {
+        if (col == 0) {
+          // corner from left
+          contraptionLayout temp = layoutClean;
+          energizeTiles(temp, {row, -1}, RIGHT);
+          int newCount = countEnergized(temp);
+          energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+
+        } else if (col == layout[row].size()-1) {
+          // corner from right
+          contraptionLayout temp = layoutClean;
+          energizeTiles(temp, {row, col+1}, LEFT);
+          int newCount = countEnergized(temp);
+          energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+        } 
+        contraptionLayout temp = layoutClean;
+        energizeTiles(temp, {row+1, col}, UP);
+        int newCount = countEnergized(temp);
+        energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+      }
+    } else {
+      int col = 0;
+      contraptionLayout temp = layoutClean;
+      energizeTiles(temp, {row, col-1}, RIGHT);
+      int newCount = countEnergized(temp);
+      energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+
+      col = layout[row].size()-1;
+      temp = layoutClean;
+      energizeTiles(temp, {row, col+1}, RIGHT);
+      newCount = countEnergized(temp);
+      energizedTileCount = (newCount > energizedTileCount) ? newCount: energizedTileCount;
+    }
+  }
+
+  std::cout << "Max energized tiles: " << energizedTileCount << std::endl;
 }
